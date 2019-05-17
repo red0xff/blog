@@ -9,7 +9,7 @@ tags: ["event", "security", "writeup", "reversing", "pwn"]
 
 HackINI (stands for Hack Initiation) is an event that is held once a year at the higher national school of computer science at Algiers, in a whole day, a CTF competition and workshops on various information security subdomains are held in parallel, this year, it was held on February 10th.
 
-[![HackINI 2018](/img/hackini18/hackini.jpg)](/img/hackini18/hackini.jpg)
+[![HackINI 2018](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109427/hackini18/hackini_bkfimc.jpg)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109427/hackini18/hackini_bkfimc.jpg)
 
 The challenges of the CTF competition are mostly easy-medium, this post will contain some writeups on some of the tasks.
 
@@ -18,36 +18,36 @@ The challenges of the CTF competition are mostly easy-medium, this post will con
 
 We are given a program that prompts us for a combination of keypresses.
 
-[![Locked](/img/hackini18/locked.png)](/img/hackini18/locked.png)
+[![Locked](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109430/hackini18/locked_gkbiqz.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109430/hackini18/locked_gkbiqz.png)
 
 When we select a wrong combination of keys and press check, it displays ``Wrong password``, and if we do it
 three times, the program exits
 
-[![Wrong Password](/img/hackini18/wrong_password.png)](/img/hackini18/wrong_password.png)
+[![Wrong Password](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109402/hackini18/wrong_password_ffmejv.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109402/hackini18/wrong_password_ffmejv.png)
 
 
 Let's start reversing! first, let's identify the file, we could use Detect it Easy, or any other file identifier
 
-[![Detect it Easy](/img/hackini18/die.png)](/img/hackini18/die.png)
+[![Detect it Easy](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109413/hackini18/die_azvvnl.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109413/hackini18/die_azvvnl.png)
 
 
 Looks like it's a .NET program, let's decompile it to check its code (I'll use ``dnSpy``, a free .NET decompiler).
 
-[![Main check](/img/hackini18/check_click.png)](/img/hackini18/check_click.png)
+[![Main check](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109409/hackini18/check_click_fr7bri.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109409/hackini18/check_click_fr7bri.png)
 
 Hmm, this function is called when we press the Check button, we understand that this.key must equal to ``-1500809143``, also, by following the ``extractFlag`` method, we find that it uses our input to print the flag, so patching won't be possible.
 Let's find out where ``this.key`` is modified
 
-[![Key List](/img/hackini18/key_list.png)](/img/hackini18/key_list.png)
+[![Key List](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109430/hackini18/key_list_i8ugfy.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109430/hackini18/key_list_i8ugfy.png)
 
 
 ``this.key`` is initialized with ``49153``, remember ``this.key_list``
 
-[![xor_key](/img/hackini18/xor_key.png)](/img/hackini18/xor_key.png)
+[![xor_key](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109406/hackini18/xor_key_fnrsca.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109406/hackini18/xor_key_fnrsca.png)
 
  ``this.key`` is also changed inside the function ``xor_key``
 
-[![button_clicks](/img/hackini18/button_clicks.png)](/img/hackini18/button_clicks.png)
+[![button_clicks](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109418/hackini18/button_clicks_vzrdpp.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109418/hackini18/button_clicks_vzrdpp.png)
 
 And ``xor_key`` is called when we toggle the buttons, here is a mapping of the buttons that we press with the indexes of the items that ``this.key`` will be xored with.
 
@@ -119,41 +119,41 @@ I no longer have access to the server, so I'll run the exploit on my localhost a
 First, we download the challenge file, and we try to run it locally
 
 
-[![execution](/img/hackini18/execution.png)](/img/hackini18/execution.png)
+[![execution](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109432/hackini18/execution_bklbc2.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109432/hackini18/execution_bklbc2.png)
 
 
 it displays the name of the user, and then prompts for the number of points, if we enter a number greater than ``5``, it displays : ``"Bad input : 10 : Maximum number of points is 5"``, otherwise, it reads the coordinates of points, and displays the point that is the furthest from the origin ``(0, 0)``
 
-[![result of execution](/img/hackini18/result_execution.png)](/img/hackini18/result_execution.png)
+[![result of execution](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109402/hackini18/result_execution_rlcdli.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109402/hackini18/result_execution_rlcdli.png)
 
 Let's reverse-engineer it to understand how it works (we use ``radare2``)
 
-[![number of points](/img/hackini18/number_of_points.png)](/img/hackini18/number_of_points.png)
+[![number of points](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109399/hackini18/number_of_points_ji4oe4.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109399/hackini18/number_of_points_ji4oe4.png)
 
 our input is first converted to int (using ``atoi``), then the result is compared with ``5``, notice the ``jle`` instruction, if our input ``x <= 5`` then it prompts for the points, otherwise it quits directly (``exit(1)``)`
 
-[![main loop](/img/hackini18/main_loop.png)](/img/hackini18/main_loop.png)
+[![main loop](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109395/hackini18/main_loop_obyxbe.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109395/hackini18/main_loop_obyxbe.png)
 
 
 
 
 Let's suppose that our input is ``<= 5`` (otherwise the program would quit immediately), we find another loop, for ``i = 0`` and while it's below x (i is ``local_4h`` in the picture, ``local_8h`` is equal to x), it executes what is in the loop, the jump on the right just breaks out of the loop
 
-[![parse input](/img/hackini18/parse_input.png)](/img/hackini18/parse_input.png)
+[![parse input](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109397/hackini18/parse_input_se5iw9.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109397/hackini18/parse_input_se5iw9.png)
 
 What it does inside the loop: it reads input and saves it in a variable (``obj.temp``), checks if it's empty (just a newline), if it is, it directly increments the loop counter and goes back to the loop check, otherwise, it compares the input with ``"stop"``, if it's equal, it breaks out of the loop, otherwise, it splits the string to two space-separated integers with strtok, and converts each of them to unsigned long int (``strtoul``), then it saves them on the stack (we suppose that it's an array of points)
 
 Notice that ``jb`` (jump if below) is not the same as ``jl`` (jump if less), ``jb`` takes into account unsigned comparison (that is, it considers that the previous comparison took two unsigned values), while ``jl`` does signed comparison, the differences appear for example when we compare two values that are not of the same sign, ``-1`` is less than ``0`` (signed comparison), but ``-1`` is far above 0 (when unsigned, ``-1 = 2**32-1`` because it's a 32bit integer), so if we put a negative value in x, the jump (jb) will always be taken (as an unsigned int, ``-1=2**32-1``), what about the first condition? it just checks if ``x <= 5``, so a negative value will also be accepted, let's try to enter -1
 
-[![minus one](/img/hackini18/minus_one.png)](/img/hackini18/minus_one.png)
+[![minus one](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109393/hackini18/minus_one_nv1mjb.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109393/hackini18/minus_one_nv1mjb.png)
 
 We can enter as many points as we want (we can enter more than ``5``), we can send an empty string to increment the array index without overwriting the data it points to, and we can enter stop to stop entering points (break out of the loop), let's try to enter a dozen of points, then quit
 
-[![segfault](/img/hackini18/segfault.png)](/img/hackini18/segfault.png)
+[![segfault](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109401/hackini18/segfault_tjgcxm.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109401/hackini18/segfault_tjgcxm.png)
 
 after entering some points with large coordinates (12370169555883773389 = ``0xababababcdcdcdcd``), we get a segmentation fault, let's investigate with ``gdb``
 
-[![debugging the segfault](/img/hackini18/debugging_segfault.png)](/img/hackini18/debugging_segfault.png)
+[![debugging the segfault](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109415/hackini18/debugging_segfault_rok51v.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109415/hackini18/debugging_segfault_rok51v.png)
 
 
 
@@ -161,19 +161,19 @@ we entered "12297829382473034410 13527612320720337851" (equal to ``0xaaaaaaaaaaa
 
 Our exploit scenario : send a negative number of points, then send some junk points (or just newlines, remember that when we send a newline, the program does not modify the stack, but it still increments the index of the next point in the stack), looking at the stack, we find out that if we send ``9`` points, the second coordinate of the nineth point will overwrite the return address, so the program will try to return to whatever we give it there.
 
-[![checksec](/img/hackini18/checksec.png)](/img/hackini18/checksec.png)
+[![checksec](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109410/hackini18/checksec_maakg9.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109410/hackini18/checksec_maakg9.png)
 
 The executable has some protections enabled, and ``ASLR`` is probably enabled, the stack is not executable, so we can't return to the stack to execute code on it, but remember that the program first prints the name of the user who ran it, it calls a function whoami, which does ``system("whoami")``, so we can return to system, now we need a pointer to ``"/bin/sh"`` or the abosolute path of any other
 shell to pass to ``system``
 
 
-[![fgets](/img/hackini18/fgets.png)](/img/hackini18/fgets.png)
+[![fgets](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109431/hackini18/fgets_xvxg71.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109431/hackini18/fgets_xvxg71.png)
 
 
 The buffer where our input containing the point coordinates is stored before being processed is in the ``.bss`` section (not the stack), remember that it's referenced by radare2 as ``obj.temp``, its address is 0x69ee00 (we can find it with gdb by putting a breakpoint on the call to gets, or from radare2, or even with the nm command), and ``PiE`` is disabled, so if we send a string in that buffer, we can know its address in advance (it's not affected by ``ASLR``), notice that when entering points, the program checks the first four characters of it against the string ``"stop"``, so if we send ``"stop/bin/sh"`` it will still break out of the loop, and we will have a pointer to ``"/bin/sh"`` at ``0x69ee00+4`` (first four characters are ``"stop"``), now we will need to
 put the pointer to ``"/bin/sh"`` in ``rdi`` (the argument to system)
 
-[![gadget](/img/hackini18/gadget.png)](/img/hackini18/gadget.png)
+[![gadget](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109422/hackini18/gadget_jyzc3t.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109422/hackini18/gadget_jyzc3t.png)
 
 We found a gadget that does exactly that, pop rdi ; ret will pop a value from the stack into the rdi register, then it will return, putting everything together we get the following attack scenario:
 - Send a negative number of points
@@ -204,11 +204,11 @@ p.send('stop/bin/sh\x00\n')
 p.interactive()
 ```
 
-[![local exploit](/img/hackini18/local.png)](/img/hackini18/local.png)
+[![local exploit](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109434/hackini18/local_u1eajz.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109434/hackini18/local_u1eajz.png)
 
 The exploit works well locally (I get a shell), let's try it on the server now, I'll just remplace ``p = process(...)`` with ``p = remote(IP, port)`` in the script
 
-[![remote exploit](/img/hackini18/remote.png)](/img/hackini18/remote.png)
+[![remote exploit](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109403/hackini18/remote_m9eohe.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109403/hackini18/remote_m9eohe.png)
 
 Works well, I get a shell, I am john, and I can read the content of flag.txt
 

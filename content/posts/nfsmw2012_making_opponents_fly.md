@@ -7,7 +7,7 @@ tags: ["gamehacking", "cheat engine", "reverse engineering", "assembly", "gaming
 ---
 This is a gamehacking tutorial targeting ``Need for Speed Most Wanted 2012``.
 
-[![Gameplay](/img/nfsmw2012_making_opponents_fly/gameplay.png)](/img/nfsmw2012_making_opponents_fly/gameplay.png)
+[![Gameplay](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110206/nfsmw2012_making_opponents_fly/gameplay_s4h3i4.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110206/nfsmw2012_making_opponents_fly/gameplay_s4h3i4.png)
 
 In this tutorial, I will register a hotkey that when pressed, will raise all the opponents by ``20m`` to the sky (and by opponents I mean both cops and race opponents), lets start :D
 
@@ -23,30 +23,30 @@ So there will be a total of ``4`` cases, we can use different tabs to speed up t
 Each time, we will start by scanning for an unknown initial value (because we don't know the initial ``z`` value).
 Lets start with float, increasing value when we get more height:
 
-[![209,290,240 results](/img/nfsmw2012_making_opponents_fly/unknown_initial_value.png)](/img/nfsmw2012_making_opponents_fly/unknown_initial_value.png)
+[![209,290,240 results](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110052/nfsmw2012_making_opponents_fly/unknown_initial_value_do81pz.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110052/nfsmw2012_making_opponents_fly/unknown_initial_value_do81pz.png)
 
 ``209,290,240`` results, that's a lot! lets advance a little and rescan for decreased values, it will remove all the values that didn't decrease when we lost height.
 
-[![2,516,010 results](/img/nfsmw2012_making_opponents_fly/next1.png)](/img/nfsmw2012_making_opponents_fly/next1.png)
+[![2,516,010 results](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109735/nfsmw2012_making_opponents_fly/next1_u3aher.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109735/nfsmw2012_making_opponents_fly/next1_u3aher.png)
 
 ``2,516,010`` results, ``99%`` of the first scan results are already filtered out, let's keep filtering, let's get back up, and rescan for increased value, then rescan for unchanged values without moving (the ``z`` value shouldn't change if we stand in-place, we will rescan for unchanged while the game is paused)
 
-[![584,104 results](/img/nfsmw2012_making_opponents_fly/next2.png)](/img/nfsmw2012_making_opponents_fly/next2.png)
+[![584,104 results](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109749/nfsmw2012_making_opponents_fly/next2_tukc2u.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109749/nfsmw2012_making_opponents_fly/next2_tukc2u.png)
 
 ``584,104`` results
 Let's drive to another place, of course ``z`` will change (changes that it will stay the same are very very low), so we scan for changed value (we don't know if it increased or decreased).
 
-[![431,126 results](/img/nfsmw2012_making_opponents_fly/standing.png)](/img/nfsmw2012_making_opponents_fly/standing.png)
+[![431,126 results](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110155/nfsmw2012_making_opponents_fly/standing_znahnb.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110155/nfsmw2012_making_opponents_fly/standing_znahnb.png)
 
 ``431,126`` results
 We keep filtering this way, using the increased, decreased, changed, unchanged scan types, and we end up with ``337`` results
 
-[![337 results](/img/nfsmw2012_making_opponents_fly/337.png)](/img/nfsmw2012_making_opponents_fly/337.png)
+[![337 results](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110135/nfsmw2012_making_opponents_fly/337_yomja6.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110135/nfsmw2012_making_opponents_fly/337_yomja6.png)
 
 Now that all the results look <more or less> related to the ``z`` coordinate of our car, let's start trying them one-by-one, each time, we incease the value, and we see if there is any change in the game, if there is none, we revert back our changes.
 We select all the results, then click the red arrow next to the scan results, and we start testing them one by one.
 
-[![z coordinate found](/img/nfsmw2012_making_opponents_fly/found_z.png)](/img/nfsmw2012_making_opponents_fly/found_z.png)
+[![z coordinate found](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110130/nfsmw2012_making_opponents_fly/found_z_pnfgq2.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110130/nfsmw2012_making_opponents_fly/found_z_pnfgq2.png)
 
 We found it, address = ``0AEA88B4`` (it will change each time you restart the game/sometimes when you crash your car, or change it, because of Dynamic memory Allocation)
 
@@ -54,11 +54,11 @@ We found it, address = ``0AEA88B4`` (it will change each time you restart the ga
 
 Now that we found the address of our ``z`` coordinate, we will try to find out what accesses it (by putting an ``on access`` breakpoint on it), we will rightclick that entry, and choose ``Find out what accesses this address``
 
-[![onread breakpoint](/img/nfsmw2012_making_opponents_fly/read_breakpoint.png)](/img/nfsmw2012_making_opponents_fly/read_breakpoint.png)
+[![onread breakpoint](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109738/nfsmw2012_making_opponents_fly/read_breakpoint_xletmw.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109738/nfsmw2012_making_opponents_fly/read_breakpoint_xletmw.png)
 
 There are a dozen instructions, most of them will probably access other variables (coordinates of other objects I guess), we will first try to find one instruction that only accesses this address, no others, to do that, we will add all the results to our codelist, then, we will test them one by one : select, then to find out what addresses they access, and check if there is only our car's structure (testing can take time, we must be sure)
 
-[![Code accessing only my car coordinates](/img/nfsmw2012_making_opponents_fly/accesses_only_mine.png)](/img/nfsmw2012_making_opponents_fly/accesses_only_mine.png)
+[![Code accessing only my car coordinates](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110203/nfsmw2012_making_opponents_fly/accesses_only_mine_qhetvo.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110203/nfsmw2012_making_opponents_fly/accesses_only_mine_qhetvo.png)
 
 Awesome, not only we found some code that accesses only the height of our car, but it also executes very often (it executes even when the game is paused), to keep track of our height (and avoing scanning for it in the future), we will do this:
 - Inject some code using the found instruction as an injection point (remplace the instruction with a ``jmp`` to a codecave of ours, run our code there, run original code then return to where we left.
@@ -90,11 +90,11 @@ unregistersymbol(player_car)
 When the box on the left of the script will be ticked, the code in ``[enable]`` will run, creating a symbol player_car that points to the address of the coordinates of our car, and when unticked, it will restore the original code.
 We delete all the addresses from our address list, and we add that script (``CTRL+ALT+A``, paste the script, ``File->Assign to current cheat table``)
 
-[![Log Player Car](/img/nfsmw2012_making_opponents_fly/log_player_car.png)](/img/nfsmw2012_making_opponents_fly/log_player_car.png)
+[![Log Player Car](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109771/nfsmw2012_making_opponents_fly/log_player_car_opxm2n.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109771/nfsmw2012_making_opponents_fly/log_player_car_opxm2n.png)
 
 We activate the script by ticking its box in the address list, then we click ``add address manually``, we select Pointer, we enter ``player_car`` (it's the symbol that we registered, Cheat Engine will resolve it), and we set the offset to ``0x34`` (our height is at offset ``0x34`` in our structure)
 
-[![Pointer](/img/nfsmw2012_making_opponents_fly/pointer.png)](/img/nfsmw2012_making_opponents_fly/pointer.png)
+[![Pointer](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109701/nfsmw2012_making_opponents_fly/pointer_xnrrd1.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109701/nfsmw2012_making_opponents_fly/pointer_xnrrd1.png)
 
 Bingo, we got a pointer to our car height, we will never have to scan for it again.
 
@@ -113,11 +113,11 @@ Next step : find some code that accesses the cars that we want to affect (cops a
 - find the height address of an opponents car by finding out what some of these instructions access.
 - find out what accesses the height of the opponents car, and check the results one by one.
 
-[![Shared Code](/img/nfsmw2012_making_opponents_fly/shared_code.png)](/img/nfsmw2012_making_opponents_fly/shared_code.png)
+[![Shared Code](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110156/nfsmw2012_making_opponents_fly/shared_code_r4dybe.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110156/nfsmw2012_making_opponents_fly/shared_code_r4dybe.png)
 
 The code at address ``"NFS13.exe"+5903E6`` looks perfect, as shown in the picture, three of the results are the base addresses of the cops cars, and the fourth one is the one of my car, we also tested it on race opponents, and it accessed them.
 
-[![Disassembly](/img/nfsmw2012_making_opponents_fly/disassembly.png)](/img/nfsmw2012_making_opponents_fly/disassembly.png)
+[![Disassembly](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109776/nfsmw2012_making_opponents_fly/disassembly_aoym2l.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558109776/nfsmw2012_making_opponents_fly/disassembly_aoym2l.png)
 
 Looking at that code, there are other advantages:
 - The ``jmp`` to our codecave will take ``5`` bytes, so we will need to add ``3`` nops, and the patched instructions are not position-dependent like relative ``jmps`` etc.
@@ -266,12 +266,12 @@ end, VK_E)
 We will save it on our cheat table (``table -> Show Cheat Table Lua Script``).
 Let's test it, and with different cars (to ensure that our cheat always works).
 
-[![Flying Cops](/img/nfsmw2012_making_opponents_fly/flying_cops.png)](/img/nfsmw2012_making_opponents_fly/flying_cops.png)
+[![Flying Cops](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110198/nfsmw2012_making_opponents_fly/flying_cops_ebh69n.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110198/nfsmw2012_making_opponents_fly/flying_cops_ebh69n.png)
 
 Cool, I can make cops fly :p
 On race opponents :
 
-[![Flying Opponents](/img/nfsmw2012_making_opponents_fly/flying_opponents.png)](/img/nfsmw2012_making_opponents_fly/flying_opponents.png)
+[![Flying Opponents](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110128/nfsmw2012_making_opponents_fly/flying_opponents_liagos.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1558110128/nfsmw2012_making_opponents_fly/flying_opponents_liagos.png)
 
 It works!
 
