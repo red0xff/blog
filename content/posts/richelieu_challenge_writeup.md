@@ -232,7 +232,7 @@ You can download the elf file [here](https://drive.google.com/file/d/11qvXGbV7D0
 
 [![img14](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077687/richelieu_challenge_writeup/achmket1adxvuo1elcua.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077687/richelieu_challenge_writeup/achmket1adxvuo1elcua.png)
 
-The file we extracted is a `statically-linked` executable that prompts for a password, using readelf, we can see that its entrypoint is at ``0x447f10`` (we will first put a breakpoint on it), let's try to find out how it checks our input.
+The file we extracted is a `statically-linked` executable that prompts for a password, using `readelf`, we can see that its entrypoint is at ``0x447f10`` (we will first put a breakpoint on it), let's try to find out how it checks our input.
 
 If we reverse-engineer it, we will find that it's doing very common code unpacking operations : ``mmap``ping a memory page that has ``RWX`` protections for example, but we don't need to understand how it's unpacking itself, we only care about how it checks our input, for that, let's use ``gdb``, put a hardware on-access breakpoint on the first byte of our input using the `awatch` command, and check where it's accessed.
 
@@ -243,14 +243,17 @@ That's probably inside a `libc` function (no symbols are available, but it doesn
 [![img16](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077754/richelieu_challenge_writeup/yj1drktmt0fpllbs5hqt.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077754/richelieu_challenge_writeup/yj1drktmt0fpllbs5hqt.png)
 
 There is an interesting pattern here, the code above checks the length of our input, if you did not understand it right away, here is an explaination:
+
 - initialize `rcx` with `-1`.
 - keep searching (scanning) for the `NULL` byte on our input, and decrement `rcx` on each non `NULL` byte (also decrement it once when you find the `NULL` byte, and stop scanning).
 - check if `rcx == -32`, `0xffffffffffffffe0` is the binary representation of the number `-32`.
+
 This means, the code is simply checking if `length(input) == 30`
 
 [![img17](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077810/richelieu_challenge_writeup/o939224nifq43mqnfv5u.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077810/richelieu_challenge_writeup/o939224nifq43mqnfv5u.png)
 
 after that, the serial check is straightforward.
+
 - There is a `buffer` at `0x004898c0`.
 - the code checks if `input[0] ^ 0x33 == buffer[0]`
 - for each index `i` in the range `[1 .. 29]`, the code is checking if `buffer[i] ^ input[i] == buffer[i+1]`
