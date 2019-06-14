@@ -252,11 +252,11 @@ This means, the code is simply checking if `length(input) == 30`
 
 [![img17](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077810/richelieu_challenge_writeup/o939224nifq43mqnfv5u.png)](https://res.cloudinary.com/dik00g2mh/image/upload/v1560077810/richelieu_challenge_writeup/o939224nifq43mqnfv5u.png)
 
-after that, the serial check is straightforward.
+after that, the serial check is straightforward:
 
 - There is a `buffer` at `0x004898c0`.
-- the code checks if `input[0] ^ 0x33 == buffer[0]`
-- for each index `i` in the range `[1 .. 29]`, the code is checking if `buffer[i] ^ input[i] == buffer[i+1]`
+- the code checks if `input[0] ^ 0x33 == buffer[0]`.
+- for each index `i` in the range `[1 .. 29]`, the code is checking if `buffer[i] ^ input[i] == buffer[i+1]`.
 
 The following script retrieves the serial.
 
