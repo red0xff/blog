@@ -2,7 +2,7 @@
 title: "Writeup of the Richelieu challenge"
 author: "Redouane"
 date: 2019-06-14T14:55:32+02:00
-description: "Writeup of the challenge organised by the French DGSN"
+description: "Writeup of the challenge organised by the French DGSE"
 cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1560076433/richelieu_challenge_writeup/zdefftgc14cw53zbax6s.jpg"
 tags: ["writeup", "security", "steganography", "cryptography", "reverse", "pwn"]
 ---
