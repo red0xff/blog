@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "https://red0xff.github.io/"
 languageCode = "en-us"
 theme = "terminal"
 paginate = 5
@@ -38,6 +38,6 @@ disqusShortname = "red0xff"
         url = "/about/"
     [languages.en.menu]
       [[languages.en.menu.main]]
-        identifier = "posts"
-        name = "Posts"
-        url = "/"
+        identifier = "search"
+        name = "Search"
+        url = "/search/"
