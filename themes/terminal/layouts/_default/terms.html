@@ -1,0 +1,14 @@
+{{ define "main" }}
+<main class="main-main">
+  <article class="list">
+    <header class="list__header">
+      <h2 class="post-tags">#{{.Title}}</h2>
+    </header>
+    <div class="post-tags">
+	{{ range $key, $value := .Data.Terms }}
+		<a href="{{ .Page.RelPermalink }}"> #{{ $value.Page.Title }}({{ printf "%#v" (len $value) }})</a>
+	{{ end }}
+	</div>
+</div>
+{{ end }}
+

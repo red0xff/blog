@@ -10,7 +10,7 @@ disqusShortname = "red0xff"
   # ["orange", "blue", "red", "green", "pink"]
   themeColor = "blue"
   # if you set this to 0, only submenu trigger will be visible
-  showMenuItems = 2
+  showMenuItems = 4
   # set theme to full screen width
   fullWidthTheme = false
   # center theme with default width
@@ -36,8 +36,17 @@ disqusShortname = "red0xff"
         identifier = "about"
         name = "About"
         url = "/about/"
-    [languages.en.menu]
       [[languages.en.menu.main]]
         identifier = "search"
         name = "Search"
         url = "/search/"
+      [[languages.en.menu.main]]
+        identifier = "posts"
+        name = "Posts"
+        url = "/posts/"
+      [[languages.en.menu.main]]
+        identifier = "writeups"
+        name = "Writeups"
+        url = "/writeups/"
+    [markup.goldmark.renderer]
+        unsafe= true
