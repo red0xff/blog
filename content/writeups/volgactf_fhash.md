@@ -285,7 +285,7 @@ ret
 
 The problem we find when trying to do it in assembly is that we don't find a way to access `i` at the end of the function, remember, it was a function argument, passed in the `rsi` register, and copied into `rbx`, but both had their values changed inside the function (and maybe recursive calls), so, how do we get it?
 
-We can't make the shellcode in `$cave1` store it in a register, otherwise, recursive calls would change it, it needs to be stocked in the storage of the function executing (one if its local variables for example), but one that is never changed.
+We can't make the shellcode in `$cave1` store it in a register, otherwise, recursive calls would change it, it needs to be stored in the storage of the function executing (one if its local variables for example), but one that is never changed.
 
 For this, I got a pretty clever idea, as the index needs to be saved in the stackframe of the function (as one if its local variables that is never changed inside the function for example), so that recursive calls don't change it, and I noticed the function is protected with a stack canary, why not save the index instead of the canary? :p
 
