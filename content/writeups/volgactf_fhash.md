@@ -302,6 +302,8 @@ at that instruction to make it store `i` instead.
 
 The end of the function (where it returns) looks like this: it checks if the canary has changed, if yes, probably calls \_\_stack_chk_fail or abort, otherwise, cleans the stack and returns.
 
+![recursive_fun_epilogue](https://res.cloudinary.com/dik00g2mh/image/upload/v1585433522/volgactf_fhash/gj5dny2ek084uyworlfx.png)
+
 after the first instruction, `i` will be in `rdx`, So, for our shellcode, we will use `rdx` as an index.
 
 4) at `$cave2`:
