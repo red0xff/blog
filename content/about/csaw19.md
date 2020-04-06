@@ -17,4 +17,4 @@ Top 10 undergraduate teams from the qualification CTF (which was held in Septemb
 
 I played with `Sudo_root`, and we finished on the 2nd place.
 
-![csaw_price](https://res.cloudinary.com/dik00g2mh/image/upload/v1586172085/csaw%2719%20finals/pj8tbpvwertnwtyaw68t.jpg)
+![csaw_price](https://res.cloudinary.com/dik00g2mh/image/upload/v1586190915/csaw%2719%20finals/nrrmkpylh0vfg25riwdz.jpg)
