@@ -8,9 +8,12 @@
 		<code><a href="{{ .Permalink }}">{{ .Title | markdownify }}</a></code>
 	{{ end }}
 	</div>
-  {{ else if or (eq .Type "posts") (eq .Type "writeups") }}
+  {{ else if or (eq .Type "posts") (eq .Type "writeups") (eq .Type "about") }}
     {{ $paginator := .Paginate (where .Data.Pages "Type" .Type) }}
     <h2 class="post-meta">{{ humanize .Type }}</h2>
+    
+	{{ .Content }}
+    
     {{ range .Paginator.Pages }}
     <div class="post on-list">
       <h1 class="post-title">
