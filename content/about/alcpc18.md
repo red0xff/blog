@@ -1,13 +1,11 @@
 ---
 title: "ALCPC 2018"
 author: "Redouane"
-date: 2019-11-06T00:00:00+02:00
+date: 2018-10-01T00:00:00+02:00
 description: "2nd place at the Algerian Collegiate Programming Contest, ICPC regional in Algeria"
 cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1586255541/csaw%2719%20finals/a9cvnzjt0lj9iaqcgjk3.jpg"
 tags: ["programming", "nerdz"]
 ---
-
-(I am the guy in the middle)
 
 # Algerian Collegiate Programming Contest 2018
 
