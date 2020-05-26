@@ -50,4 +50,5 @@ disqusShortname = "red0xff"
         url = "/writeups/"
     [markup.goldmark.renderer]
         unsafe= true
-
+    [markup.highlight]
+        style = 'api'
