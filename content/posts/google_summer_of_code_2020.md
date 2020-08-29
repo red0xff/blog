@@ -4,8 +4,7 @@ date: 2019-04-24T09:27:58+02:00
 author: "NIBOUCHA Redouane"
 description: "an overview of the work I accomplished during Google Summer of Code 2020"
 cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1598717631/gsoc_2020/lbqz6lw6yy0uytgggnov.png"
-tags: ["sql injection", "web security", "opensource", "programming"]
-categories: ["security"]
+tags: ["sql injection", "security", "web security", "opensource", "programming"]
 ---
 # Table of Contents
 1. [Introduction](#0b79795d3efc95b9976c7c5b933afce2)
@@ -20,6 +19,7 @@ categories: ["security"]
 	5. [Results of the execution](#707ae1bbecb994d13ec98cb72f2316b7)
 6. [Conclusion](#6f8b794f3246b0c1e1780bb4d4d5dc53)
 
+# <span id='0b79795d3efc95b9976c7c5b933afce2'>Introduction</span>
 
 Being interested in computer security, and being an opensource lover, I wanted to
 participate in Google Summer of Code this year, after checking out the list of organizations,
@@ -29,7 +29,18 @@ was very interested in contributing to a framework of this popularity.
 
 # <span id='67ed87f44709a5e274e570dc0174bb38'>My Proposal</span>
 
-You can find my proposal [here](https://summerofcode.withgoogle.com/projects/#6297726754488320).
+You can find my proposal [here](https://drive.google.com/file/d/1luwf1cph0Mtnn-IuasecYLw0aT_apvSE/view?usp=sharing).
+
+The idea I worked on was enhancing SQL injection support on the Metasploit Framework, SQL injections
+are vulnerabilities that have been around for a very long time, they are due to the lack of input
+sanitization, and can allow attackers to get access to sensitive data, some metasploit modules already
+implement SQL injection attacks, the problem for module writers is that many types of SQL injections
+require effort implementing, take for example time-based SQL injections, the module writer has to do
+some kind of binary search to leak bytes of data, or for example, cases where the results of the query
+are truncated of a given length, the module writer has to leak substrings, and concatenate them.
+
+The aim of my project is to add a library that takes care of all these issues, making module writing
+easier in the case of SQL injections.
 
 # <span id='7aef9d0c5402a915a1f7711fd90218ed'>Community-Bonding period</span>
 
