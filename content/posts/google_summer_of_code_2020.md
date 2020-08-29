@@ -3,7 +3,7 @@ title: "GSoC 2020 - Enhancing metasploit support for 'the Hack That Will Never G
 date: 2020-08-29T16:45:58+02:00
 author: "NIBOUCHA Redouane"
 description: "an overview of the work I accomplished during Google Summer of Code 2020"
-cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1598717631/gsoc_2020/lbqz6lw6yy0uytgggnov.png"
+cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1598731680/gsoc_2020/wozysdpe5qy4gst0tpx9.png"
 tags: ["sql injection", "security", "web security", "opensource", "programming"]
 ---
 # Table of Contents
