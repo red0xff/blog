@@ -1,6 +1,6 @@
 ---
 title: "GSoC 2020 - Enhancing metasploit support for 'the Hack That Will Never Go Away'"
-date: 2019-04-24T09:27:58+02:00
+date: 2020-08-29T16:45:58+02:00
 author: "NIBOUCHA Redouane"
 description: "an overview of the work I accomplished during Google Summer of Code 2020"
 cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1598717631/gsoc_2020/lbqz6lw6yy0uytgggnov.png"
@@ -31,6 +31,8 @@ was very interested in contributing to a framework of this popularity.
 
 You can find my proposal [here](https://drive.google.com/file/d/1luwf1cph0Mtnn-IuasecYLw0aT_apvSE/view?usp=sharing).
 
+Google Summer of Code project description [here](https://summerofcode.withgoogle.com/projects/#6297726754488320).
+
 The idea I worked on was enhancing SQL injection support on the Metasploit Framework, SQL injections
 are vulnerabilities that have been around for a very long time, they are due to the lack of input
 sanitization, and can allow attackers to get access to sensitive data, some metasploit modules already
@@ -39,8 +41,12 @@ require effort implementing, take for example time-based SQL injections, the mod
 some kind of binary search to leak bytes of data, or for example, cases where the results of the query
 are truncated of a given length, the module writer has to leak substrings, and concatenate them.
 
-The aim of my project is to add a library that takes care of all these issues, making module writing
-easier in the case of SQL injections.
+The aim of my project was to add a library that takes care of all these issues, making module writing
+easier in the case of SQL injections, I wanted the library to:
+
+- Support not only HTTP, allow the user to handle connection with the server.
+- Have module writers run SQL directly, whether the SQL injection is blind or not.
+- Have methods for enumerating table names, column names, whatever is useful and commonly done when doing SQL injection.
 
 # <span id='7aef9d0c5402a915a1f7711fd90218ed'>Community-Bonding period</span>
 
@@ -230,7 +236,7 @@ end
 
 ![retrieval of cookies](https://res.cloudinary.com/dik00g2mh/image/upload/v1598711216/gsoc_2020/wlzmh7voeuco9hkoqt7r.png)
 
-(The error, `Login is required ...` just indicates that `x4J...2Ps` is not an admin cookie, it's the cookie of an unprivileged user).
+(The error, `Login is required ...` just indicates that `x4J...2Ps` is not an admin cookie, it's the cookie of an unprivileged user, but we notice that the other cookie was tested successfully to be an admin cookie).
 
 Not only we reproduced the vulnerability, but we were able to retrieve the actual cookies with minimal effort using the library.
 
