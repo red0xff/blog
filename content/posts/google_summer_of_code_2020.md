@@ -11,12 +11,10 @@ tags: ["sql injection", "security", "web security", "opensource", "programming"]
 2. [My Proposal](#67ed87f44709a5e274e570dc0174bb38)
 3. [Community-Bonding period](#7aef9d0c5402a915a1f7711fd90218ed)
 4. [Results of my contribution](#fed02dc7f03d495d89a1783a42fa77d3)
-5. [Writing an exploit for CVE-2017-8835](#981725cf5d343830f3590df23fbbf285)
-	1. [Analysis of the vulnerability](#04d84c9eded9f4fdc34c7148a3a77686)
-	2. [Creation of the SQL injection object](#d3af9b314b9b5c1de3c386ce802233eb)
-	3. [a word about session management](#58adb7987ef3ebb0891820242143bb4d)
-	4. [Plan for our implementation](#d805c5ef0dda336d58014183916db15b)
-	5. [Results of the execution](#707ae1bbecb994d13ec98cb72f2316b7)
+5. [My Google Summer of Code journey](#981725cf5d343830f3590df23fbbf285)
+	1. [Initial work](#04d84c9eded9f4fdc34c7148a3a77686)
+	2. [SQLite support and specs for the library](#d3af9b314b9b5c1de3c386ce802233eb)
+	3. [Support for `PostgreSQL`, and other database-management systems](#58adb7987ef3ebb0891820242143bb4d)
 6. [Conclusion](#6f8b794f3246b0c1e1780bb4d4d5dc53)
 
 # <span id='0b79795d3efc95b9976c7c5b933afce2'>Introduction</span>
@@ -110,7 +108,7 @@ regular SQL injections, running:
 @sqli.run_sql('select group_concat(table_name) from information_schema.tables')
 ``` 
 
-would yield the given SQL query to the block, but if the object was a MySQLi::BooleanBasedBlind, the same call would yield:
+would yield the given SQL query to the block, but if the object was a `MySQLi::BooleanBasedBlind`, the same call would yield:
 
 ```
 ascii(mid(cast((select group_concat(table_name) from information_schema.tables) as binary), 1, 1))&1<>0
@@ -126,7 +124,7 @@ ascii(mid(cast((select group_concat(table_name) from information_schema.tables) 
 Each of these is sent to the block to be evaluated as a condition, and leak one bit of information, recall that in boolean-based blind SQLi, we only know
 whether the query returned a result or not, so we can only leak one bit with one query, and this is exactly what the library does.
 
-Time-based blind support for `MySQL/MariaDB` was done in a similar manner, except that these conditions were wrapped inside if(..., sleep(delay), 1), so that
+Time-based blind support for `MySQL/MariaDB` was done in a similar manner, except that these conditions were wrapped inside `if(..., sleep(delay), 1)`, so that
 a delay is produced if the condition is true, the library also takes care of checking if the target slept more than sleepdelay or not, and all of this is transparent
 to the user.
 
@@ -140,10 +138,10 @@ My list of features to add kept growing during this period, and I implemented ma
 
 Also, during the first month, I re-wrote some SQL injection modules to make them use my library, it reduced a lot of their complexity, and made them more efficient:
 
-- [eyesofnetwork_autodiscovery_rce](https://github.com/rapid7/metasploit-framework/blob/master/modules/exploits/linux/http/eyesofnetwork_autodiscovery_rce.rb) : 527 LoC -> 460 LoC, running time divided by 2.
-- [openemr_sqli_dump](https://github.com/rapid7/metasploit-framework/blob/master/modules/auxiliary/sqli/openemr/openemr_sqli_dump.rb) : 235 LoC -> 151 LoC, improved injection (now skips builtin tables and only retrieves userdata).
+- [eyesofnetwork_autodiscovery_rce](https://github.com/rapid7/metasploit-framework/blob/master/modules/exploits/linux/http/eyesofnetwork_autodiscovery_rce.rb) : `527` LoC -> `460` LoC, running time divided by 2.
+- [openemr_sqli_dump](https://github.com/rapid7/metasploit-framework/blob/master/modules/auxiliary/sqli/openemr/openemr_sqli_dump.rb) : `235` LoC -> `151` LoC, improved injection (now skips builtin tables and only retrieves userdata).
 
-## SQLite support and specs for the library
+## <span id='d3af9b314b9b5c1de3c386ce802233eb'>SQLite support and specs for the library</span>
 
 `SQLite` support was the second on my priority list, mostly because I always thought `SQLite` was different because of its minimalism, different in a way that could make it hard for module writers to implement SQL injection attacks
 when it is in-use, the part that was a bit more complex was time-based blind SQL injection, because `SQLite` does not have a function like sleep, that causes a delay in the response, I had to use heavy queries, which are queries that
@@ -171,17 +169,20 @@ unicode(substr(cast((#{query}) as blob), 2, 1))&1<>0 and randomblob(1000000)
 
 If a bit is 1, it should get to the second part of the `and`, which should take some time to run, this is how the library knows the outcome of the condition.
 
-I also had to refactor code when adding support for SQLite, because I noticed there was a lot of code shared between DBMS-specific implementations, on blind queries mostly, so I added a Utils mixin that acts like an interface that
+I also had to refactor code when adding support for `SQLite`, because I noticed there was a lot of code shared between DBMS-specific implementations, on blind queries mostly, so I added a `Utils` mixin that acts like an interface that
 is implemented in all the classes that make use of the shared code.
 
-For testing, I wrote a module for exploiting an SQL injection on Peplink Balance routers (writeup [here](https://gist.github.com/red0xff/c4511d2f427efcb8b018534704e9607a), and a testing module for [sqlite-lab](https://github.com/incredibleindishell/sqlite-lab).
+For testing I wrote:
 
-## Support for PostgreSQL, and other database-management systems
+- [peplink_bauth_sqli](https://github.com/rapid7/metasploit-framework/blob/master/modules/auxiliary/gather/peplink_bauth_sqli.rb) (writeup [here](https://gist.github.com/red0xff/c4511d2f427efcb8b018534704e9607a)
+- [testing module](https://github.com/rapid7/metasploit-framework/blob/master/test/modules/auxiliary/test/sqlite_lab.rb) for [sqlite-lab](https://github.com/incredibleindishell/sqlite-lab)
 
-PostgreSQL support was easy to add, because of how popular the DBMS is, it was easy to find vulnerable software to test it, to get it running in a testing environment and so on, I wrote a module for [CVE-2019-13373](https://www.cvedetails.com/cve/CVE-2019-13373/), which is a vulnerability
+## <span id='58adb7987ef3ebb0891820242143bb4d'>Support for `PostgreSQL`, and other database-management systems</span>
+
+`PostgreSQL` support was easy to add, because of how popular the DBMS is, it was easy to find vulnerable software to test it, to get it running in a testing environment and so on, I wrote a module for [CVE-2019-13373](https://www.cvedetails.com/cve/CVE-2019-13373/), which is a vulnerability
 found on some versons of D-Link Central WiFi Manager CWM(100), and a test module for vulnerable code I wrote myself.
 
-Support for MSSQL and Oracle was added in the last month of the program, I provided test modules for each, but no exploit on real vulnerabilities, might implement some in the future.
+Support for `MSSQL` and `Oracle Database` was added in the last month of the program, I provided test modules for each, but no exploit on real vulnerabilities, might implement some in the future.
 
 # <span id='6f8b794f3246b0c1e1780bb4d4d5dc53'>Conclusion</span>
 
