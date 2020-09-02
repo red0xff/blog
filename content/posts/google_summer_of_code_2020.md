@@ -174,7 +174,7 @@ is implemented in all the classes that make use of the shared code.
 
 For testing I wrote:
 
-- [peplink_bauth_sqli](https://github.com/rapid7/metasploit-framework/blob/master/modules/auxiliary/gather/peplink_bauth_sqli.rb) (writeup [here](https://gist.github.com/red0xff/c4511d2f427efcb8b018534704e9607a)
+- [peplink_bauth_sqli](https://github.com/rapid7/metasploit-framework/blob/master/modules/auxiliary/gather/peplink_bauth_sqli.rb) (writeup [here](https://gist.github.com/red0xff/c4511d2f427efcb8b018534704e9607a))
 - [testing module](https://github.com/rapid7/metasploit-framework/blob/master/test/modules/auxiliary/test/sqlite_lab.rb) for [sqlite-lab](https://github.com/incredibleindishell/sqlite-lab)
 
 ## <span id='58adb7987ef3ebb0891820242143bb4d'>Support for `PostgreSQL`, and other database-management systems</span>
