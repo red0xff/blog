@@ -180,7 +180,7 @@ For testing I wrote:
 ## <span id='58adb7987ef3ebb0891820242143bb4d'>Support for `PostgreSQL`, and other database-management systems</span>
 
 `PostgreSQL` support was easy to add, because of how popular the DBMS is, it was easy to find vulnerable software to test it, to get it running in a testing environment and so on, I wrote a module for [CVE-2019-13373](https://www.cvedetails.com/cve/CVE-2019-13373/), which is a vulnerability
-found on some versons of D-Link Central WiFi Manager CWM(100), and a test module for vulnerable code I wrote myself.
+found on some versions of D-Link Central WiFi Manager CWM(100), and a test module for vulnerable code I wrote myself.
 
 Support for `MSSQL` and `Oracle Database` was added in the last month of the program, I provided test modules for each, but no exploit on real vulnerabilities, might implement some in the future.
 
