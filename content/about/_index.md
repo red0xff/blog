@@ -6,7 +6,7 @@ description: "A blog about computer security, gaming or whatever"
 ---
 
 # Bio
-My name is Redouane, I am a student at the [Higher national school of computer science (ESI)](https://www.esi.dz/), at Algiers.
+My name is Redouane, I graduated from the [Higher national school of computer science (ESI)](https://www.esi.dz/), I love cybersecurity and computer science.
 
 # Where to find me
 
