@@ -76,7 +76,7 @@ Sponge constructions can be used not only to hash data, but also to generate var
 
 ### <span id='c7457bffbda74e572bc8e713f630a86a'>The internal state</span>
 
-The internal state of the hash function has \\(r+c\\) bits. We represent it as a \\(5\times 5\times w\\) 3D array of bits, where \\(w\\) is a multiple of `2` (in practice, \\(w = 64\\), so \\(r+c = 1600\\)).
+The internal state of the hash function has \\(r+c\\) bits. We represent it as a \\(5\times 5\times w\\) 3D array of bits, where \\(w\\) is a power of `2` (\\(w = 2^l\\)) (in practice, \\(w = 64\\), so \\(r+c = 1600\\)).
 
 ![internal state](https://res.cloudinary.com/dik00g2mh/image/upload/v1644050412/inverting_keccak_f/l6hvsredmgyhverauemr.png)
 
@@ -96,7 +96,7 @@ In the `SHA-3` family of hash functions, different functions have different rate
 The function at the core of the sponge construction in SHA-3 is called `Keccak-p`. The steps it consists of are as follow:
 
 Input:
-- String S of length \\( b =  5 \times 5 \times w \\) 
+- String `S` of length \\( b =  5 \times 5 \times w \\) 
 - Number of rounds \\( n_r \\).
 
 Operations:
@@ -105,7 +105,7 @@ Operations:
 - Runs the following operations \\( n_r \\) times (\\( i_r \\) being the round index, taking the values `0`, `1`, ...).
   - \\( A' = \iota ( \chi ( \pi ( \rho ( \theta ( A ) ) ) ), i_r ) \\)
   - \\( A' \\) becomes the new state
-- Convert the state to a string S (of length `b`), bits are just rearranged, as in the first step.
+- Convert the state to a string `S` (of length `b`), bits are just rearranged, as in the first step.
 
 ```ruby
   def keccak_rho(s, nr)
@@ -141,7 +141,7 @@ The \\(\theta\\) operation adds some adjacent columns to each element in the sta
 
 - For all pairs \\((x, z)\\) such that \\(0 \leq x < 5\\) and \\(0 \leq z < w\\), let
   $$C[x, z] = A[x, 0, z] \oplus A[x, 1, z] \oplus A[x, 2, z] \oplus A[x, 3, z] \oplus A[x, 4, z]$$
-  \\(C[x, z]\\) is just the sum in \\(GF(2)\\) of the column at \\((x, z)\\) (see the screenshot below for an illustration)
+  \\(C[x, z]\\) is just the sum in \\(GF(2)\\) of the column at \\((x, z)\\) (see the screenshot above for an illustration)
 - For all pairs \\((x, z)\\) such that \\(0 ≤ x < 5\\) and \\(0 ≤ z < w\\) let
   $$D[x, z] = C[(x-1)\bmod 5, z] \oplus C[(x+1)\bmod 5, (z-1)\bmod w]$$
   \\(D[x, z]\\) is the sum of the two columns, at \\(((x-1)\bmod 5, z)\\) and \\((x+1)\bmod 5, (z-1)\bmod w\\).
@@ -257,7 +257,7 @@ The effect of this operation is to modify some bits of the lane \\((0, 0)\\) in 
 - Some round constants are calculated, using a simple algorithm that only takes into consideration the round index.
   \\(RC\\) is a vector of \\(w\\) bits. The constant for round \\(i_r\\).
 - Make \\(A'\\) a copy of \\(A\\).
-- For all z such that \\(0 \leq z <w\\), let \\(A'[0, 0, z] = A[0, 0, z] ⊕ RC[z]\\).
+- For all \\(z\\) such that \\(0 \leq z <w\\), let \\(A'[0, 0, z] = A[0, 0, z] ⊕ RC[z]\\).
 - \\(A'\\) is the new state.
 
 More details on each of the steps, including the algorithm for calculating round constants, can be found on [the original NIST publication](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.202.pdf).
@@ -315,7 +315,7 @@ $$ A'[2, 2, 4] = A[2, 2, 4] \oplus \\\\
 My idea to invert this step is to consider \\(5\times 5\times w\\) equations of \\(5\times 5\times w\\) unknowns, where unknowns are bits from the state before the application of the \\(\theta\\) step.
 
 In the matrix form of this system:
-\\(M.B = B'\\), where \\(B\\) is the state before the transformation, \\(B'\\) after, M the matrix representing the system.
+\\(M.B = B'\\), where \\(B\\) is the state before the transformation, \\(B'\\) after, \\(M\\) the matrix representing the system.
 
 <div class="reminder">
 
@@ -430,9 +430,9 @@ This is the algorithm for \\(\pi^{-1}\\):
 
 #### <span id='364549d11c2ca4a7d57526a128c79fc7'>\\( \chi^{-1} \\): Non-linearity</span>
 
-The \\(\chi\\) operation is the only non-linear one (non-linear because it includes logical and (&) operations, which are analog to multiplications).
+The \\(\chi\\) operation is the only non-linear one (non-linear because it includes logical and `&` operations, which are analog to multiplications).
 
-If we look closely, we notice that the step applies the non-linear function on 5-bit parts, that is, for every \\((y, z)\\), \\(0 \leq y < 5\\), \\(0 \leq z < w\\), the bits at \\((x, y, z)\\) for every possible value of \\(x\\) (from `0` to `4`) are inputs and outputs of the function.
+If we look closely, we notice that the step applies the non-linear function on `5`-bit parts, that is, for every \\((y, z)\\), \\(0 \leq y < 5\\), \\(0 \leq z < w\\), the bits at \\((x, y, z)\\) for every possible value of \\(x\\) (from `0` to `4`) are inputs and outputs of the function.
 
 To inverse it, my approach was to:
 
@@ -497,6 +497,7 @@ As a reminder, the \\(Keccak-p\\) function performs the following steps:
 - Runs the following operations \\(n_r\\) times (\\(i_r\\) being the round index, `0`, `1` ...).
   - \\( A' = \iota ( \chi ( \pi ( \rho ( \theta ( A ) ) ) ), i_r ) \\)
   - \\( A' \\) becomes the new state
+- Convert the state to a string `S` (of length `b`), bits are just rearranged, as in the first step.
 
 Inversing it becomes trivial, the following are the steps:
 
@@ -504,7 +505,7 @@ Inversing it becomes trivial, the following are the steps:
 - Runs the following operations \\(n_r\\) times (\\(i_r\\) being the round index), for \\(i_r\\) from \\(n_r\\) to `0`.
   - \\( A = \theta^{-1}(\rho^{-1}(\pi^{-1}(\chi^{-1}(\iota^{-1}(A', i_r))))) \\)
   - \\( A \\) becomes the new state
-- Convert the state to a string S (of length `b`), bits are just rearranged, as in the first step.
+- Convert the state to a string `S` (of length `b`), bits are just rearranged, as in the first step.
 
 ```ruby
   def unkeccak_rho(s, nr)
