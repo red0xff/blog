@@ -8,25 +8,25 @@ tags: ["cryptography", "security", "programming"]
 ---
 # Table of Contents
 1. [What is SHA3](#48e44afe254baadf1c4e19c4132eae7c)
-	1. [Why another hash function in the SHA family?](#bcab6d9074f315b4fd72d407adaa7a67)
-	2. [Deeper view of SHA-3](#0d590e39e265f6c96780ee96fb2d624e)
-		1. [The sponge construction](#ff00bce0d3e140eb2a60157c6f8cebdc)
-		2. [The internal state](#c7457bffbda74e572bc8e713f630a86a)
-		3. [The Permutation function at the core of Keccak: `Keccak-p`](#70fedc354e98820934fc9d760d1d90e1)
-			1. [Theta: \\(\theta\\)](#ab6fe72572eabfb5d2ddadd00deebb99)
-			2. [Rho: \\(\rho\\)](#64b373855935bc52c553c96eaa45567f)
-			3. [Pi: \\(\pi\\)](#28807e83cfadd8652bd967c5eea6188d)
-			4. [Chi: \\(\chi\\)](#2396a5e0ccfeb48fd9014587f21b52b4)
-			5. [Iota: \\(\iota\\)](#3a61d5cf288750bd7631d80b7010eeb7)
-		4. [Inverting Keccak-p](#b86cc6257c666cf0b09f14eccf2b2d62)
-			1. [\\( \theta^{-1} \\): Back to linear algebra](#8744f857cb278dca0f7b5d74c7a54db3)
-			2. [\\( \rho^{-1} \\): Simplier than it looks](#fea3109413052336898e19ba5a78c220)
-			3. [\\( \pi^{-1} \\): Inverse transposition](#8f9a26e303dd7828e03db2fab96a133c)
-			4. [\\( \chi^{-1} \\): Non-linearity](#364549d11c2ca4a7d57526a128c79fc7)
-			5. [\\( \iota^{-1} \\): Xor again and it'll be done](#8f496b7e6dd4d2d88fc33921a9c37de3)
-			6. [\\(Keccak-p^{-1}\\): Just perform the inverse operations in reverse order](#72f2953799021dd6c24179b35bfd5197)
-		5. [Example testing](#0220f4950275efe768e0fcc6f3a1fa47)
-		6. [Implications](#a57ed906d9b447025b6375a22fdc285b)
+2. [Why another hash function in the SHA family?](#bcab6d9074f315b4fd72d407adaa7a67)
+3. [Deeper view of SHA-3](#0d590e39e265f6c96780ee96fb2d624e)
+	1. [The sponge construction](#ff00bce0d3e140eb2a60157c6f8cebdc)
+	2. [The internal state](#c7457bffbda74e572bc8e713f630a86a)
+	3. [The Permutation function at the core of Keccak: `Keccak-p`](#70fedc354e98820934fc9d760d1d90e1)
+		1. [Theta: \\(\theta\\)](#ab6fe72572eabfb5d2ddadd00deebb99)
+		2. [Rho: \\(\rho\\)](#64b373855935bc52c553c96eaa45567f)
+		3. [Pi: \\(\pi\\)](#28807e83cfadd8652bd967c5eea6188d)
+		4. [Chi: \\(\chi\\)](#2396a5e0ccfeb48fd9014587f21b52b4)
+		5. [Iota: \\(\iota\\)](#3a61d5cf288750bd7631d80b7010eeb7)
+	4. [Inverting Keccak-p](#b86cc6257c666cf0b09f14eccf2b2d62)
+		1. [\\( \theta^{-1} \\): Back to linear algebra](#8744f857cb278dca0f7b5d74c7a54db3)
+		2. [\\( \rho^{-1} \\): Simplier than it looks](#fea3109413052336898e19ba5a78c220)
+		3. [\\( \pi^{-1} \\): Inverse transposition](#8f9a26e303dd7828e03db2fab96a133c)
+		4. [\\( \chi^{-1} \\): Non-linearity](#364549d11c2ca4a7d57526a128c79fc7)
+		5. [\\( \iota^{-1} \\): Xor again and it'll be done](#8f496b7e6dd4d2d88fc33921a9c37de3)
+	5. [\\(Keccak-p^{-1}\\): Just perform the inverse operations in reverse order](#72f2953799021dd6c24179b35bfd5197)
+	6. [Example testing](#0220f4950275efe768e0fcc6f3a1fa47)
+4. [Implications](#a57ed906d9b447025b6375a22fdc285b)
 
 <script type="text/javascript"
     src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -50,7 +50,7 @@ a cryptographic hash function is a fast one-way function that associates a fixed
 - Second pre-image resistance: Given an input `m1`, it should be difficult to find another input `m2` such that `hash(m1) = hash(m2)`.<br>
 </div>
 
-## <span id='bcab6d9074f315b4fd72d407adaa7a67'>Why another hash function in the SHA family?</span>
+# <span id='bcab6d9074f315b4fd72d407adaa7a67'>Why another hash function in the SHA family?</span>
 
 For over a decade, the most common construction of hash functions was based on block ciphers. Using the so-called [Merkle–Damgård construction](https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction). Associated with a [compression function](https://en.wikipedia.org/wiki/One-way_compression_function) that is very similar to a block cipher.
 
@@ -62,9 +62,9 @@ Some of the previously-standarized hash functions have also proven vulnerable, c
 
 `SHA-3` is fundamentally different, it's not just another similarly-designed hash function with a different compression function. It relies instead on a sponge construction.
 
-## <span id='0d590e39e265f6c96780ee96fb2d624e'>Deeper view of SHA-3</span>
+# <span id='0d590e39e265f6c96780ee96fb2d624e'>Deeper view of SHA-3</span>
 
-### <span id='ff00bce0d3e140eb2a60157c6f8cebdc'>The sponge construction</span>
+## <span id='ff00bce0d3e140eb2a60157c6f8cebdc'>The sponge construction</span>
 
 The structure of a sponge construction is illustrated below:
 
@@ -74,7 +74,7 @@ We call the function `f` the `Permutation Function` of the sponge construction.
 
 Sponge constructions can be used not only to hash data, but also to generate variable-sized streams of data (which can be used for `PRNG`s or stream ciphers for example).
 
-### <span id='c7457bffbda74e572bc8e713f630a86a'>The internal state</span>
+## <span id='c7457bffbda74e572bc8e713f630a86a'>The internal state</span>
 
 The internal state of the hash function has \\(r+c\\) bits. We represent it as a \\(5\times 5\times w\\) 3D array of bits, where \\(w\\) is a power of `2` (\\(w = 2^l\\)) (in practice, \\(w = 64\\), so \\(r+c = 1600\\)).
 
@@ -91,7 +91,7 @@ In the `SHA-3` family of hash functions, different functions have different rate
 
 
 
-### <span id='70fedc354e98820934fc9d760d1d90e1'>The Permutation function at the core of Keccak: `Keccak-p`</span>
+## <span id='70fedc354e98820934fc9d760d1d90e1'>The Permutation function at the core of Keccak: `Keccak-p`</span>
 
 The function at the core of the sponge construction in SHA-3 is called `Keccak-p`. The steps it consists of are as follow:
 
@@ -133,7 +133,7 @@ Operations:
 
 The next subsections will summarize each of these operations.
 
-#### <span id='ab6fe72572eabfb5d2ddadd00deebb99'>Theta: \\(\theta\\)</span>
+### <span id='ab6fe72572eabfb5d2ddadd00deebb99'>Theta: \\(\theta\\)</span>
 
 ![theta](https://keccak.team/files/Keccak-f-Theta.png)
 
@@ -171,7 +171,7 @@ Code:
   end
 ```
 
-#### <span id='64b373855935bc52c553c96eaa45567f'>Rho: \\(\rho\\)</span>
+### <span id='64b373855935bc52c553c96eaa45567f'>Rho: \\(\rho\\)</span>
 
 ![rho](https://keccak.team/files/Keccak-f-Rho.png)
 
@@ -200,7 +200,7 @@ Code:
   end
 ```
 
-#### <span id='28807e83cfadd8652bd967c5eea6188d'>Pi: \\(\pi\\)</span>
+### <span id='28807e83cfadd8652bd967c5eea6188d'>Pi: \\(\pi\\)</span>
 
 ![pi](https://keccak.team/files/Keccak-f-Pi.png)
 
@@ -225,7 +225,7 @@ Code:
   end
 ```
 
-#### <span id='2396a5e0ccfeb48fd9014587f21b52b4'>Chi: \\(\chi\\)</span>
+### <span id='2396a5e0ccfeb48fd9014587f21b52b4'>Chi: \\(\chi\\)</span>
 
 ![chi](https://keccak.team/files/Keccak-f-Chi.png)
 
@@ -250,7 +250,7 @@ Code:
   end
 ```
 
-#### <span id='3a61d5cf288750bd7631d80b7010eeb7'>Iota: \\(\iota\\)</span>
+### <span id='3a61d5cf288750bd7631d80b7010eeb7'>Iota: \\(\iota\\)</span>
 
 The effect of this operation is to modify some bits of the lane \\((0, 0)\\) in a manner that depends on the round index \\(i_r\\).
 
@@ -292,7 +292,7 @@ Code:
   end
 ```
 
-### <span id='b86cc6257c666cf0b09f14eccf2b2d62'>Inverting Keccak-p</span>
+## <span id='b86cc6257c666cf0b09f14eccf2b2d62'>Inverting Keccak-p</span>
 
 \\(Keccak-p\\) is a permutation, as such, it is efficiently invertible. This doesn't have the disastrous consequences you might think of, the hash function remains safe, and one-way, because the internal state is never returned, and it's not possible to invert the permutation by having only `rate` bits of its internal state.
 
@@ -305,7 +305,7 @@ Please note that:
 - This is my own attempt at inverting the function, I did not follow any reference to do it, as such, it might not be the most efficient way, but it works.
 - The implementation is focused on simplicity and readability, not performance. It's as close as possible to the specification from [the NIST paper](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.202.pdf).
 
-#### <span id='8744f857cb278dca0f7b5d74c7a54db3'>\\( \theta^{-1} \\): Back to linear algebra</span>
+### <span id='8744f857cb278dca0f7b5d74c7a54db3'>\\( \theta^{-1} \\): Back to linear algebra</span>
 
 The \\(\theta\\) step essentially replaces each element in the state with a sum of 11 elements. For example:
 $$ A'[2, 2, 4] = A[2, 2, 4] \oplus \\\\
@@ -408,7 +408,7 @@ We define a class `BinMatrix`, which will represent a matrix over the field \\(G
   end
 ```
 
-#### <span id='fea3109413052336898e19ba5a78c220'>\\( \rho^{-1} \\): Simplier than it looks</span>
+### <span id='fea3109413052336898e19ba5a78c220'>\\( \rho^{-1} \\): Simplier than it looks</span>
 
 The \\(\rho\\) step essentially loops `24` times, and moves bits within each lane, iterating over each lane exactly once (except for \\((0, 0)\\), for which no rotation is performed). We checked it by inspecting \\((x, y)\\) values as iterations advance.
 
@@ -419,7 +419,7 @@ To inverse this step, we simply have to rotate the bits back, we can keep the sa
   $$ A[x, y, (z – (t +1)(t + 2)/2)\bmod w] = A'[x, y, z]$$
   - let \\((x, y) = (y, (2x + 3y)\bmod 5)\\)
 
-#### <span id='8f9a26e303dd7828e03db2fab96a133c'>\\( \pi^{-1} \\): Inverse transposition</span>
+### <span id='8f9a26e303dd7828e03db2fab96a133c'>\\( \pi^{-1} \\): Inverse transposition</span>
 
 Also a very simple step to inverse. \\(\pi\\) essentially performs \\(A'[x, y, z] = A[(x+3y)\bmod 5, x, z]\\) for every \\(0 \leq x < 5\\), \\(0 \leq y < 5\\), \\(0 \leq z < w\\).
 
@@ -428,7 +428,7 @@ This is the algorithm for \\(\pi^{-1}\\):
 - For all \\(0 \leq x < 5\\), \\(0 \leq y < 5\\), \\(0 \leq z < w\\):
   - Set \\(A[(x+3y)\bmod 5, x, z] = A'[x, y, z]\\)
 
-#### <span id='364549d11c2ca4a7d57526a128c79fc7'>\\( \chi^{-1} \\): Non-linearity</span>
+### <span id='364549d11c2ca4a7d57526a128c79fc7'>\\( \chi^{-1} \\): Non-linearity</span>
 
 The \\(\chi\\) operation is the only non-linear one (non-linear because it includes logical and `&` operations, which are analog to multiplications).
 
@@ -477,7 +477,7 @@ To inverse it, my approach was to:
   end
 ```
 
-#### <span id='8f496b7e6dd4d2d88fc33921a9c37de3'>\\( \iota^{-1} \\): Xor again and it'll be done</span>
+### <span id='8f496b7e6dd4d2d88fc33921a9c37de3'>\\( \iota^{-1} \\): Xor again and it'll be done</span>
 
 This step is very easy to inverse, all it does is to xor some values in the state with some round constants.
 
@@ -489,7 +489,7 @@ To invert it, we just have to perform it again (the same round constants will be
   end
 ```
 
-#### <span id='72f2953799021dd6c24179b35bfd5197'>\\(Keccak-p^{-1}\\): Just perform the inverse operations in reverse order</span>
+## <span id='72f2953799021dd6c24179b35bfd5197'>\\(Keccak-p^{-1}\\): Just perform the inverse operations in reverse order</span>
 
 As a reminder, the \\(Keccak-p\\) function performs the following steps:
 
@@ -524,7 +524,7 @@ Inversing it becomes trivial, the following are the steps:
 
 That's it! we've successfully inverted the permutation at the core of the Keccak algorithm.
 
-### <span id='0220f4950275efe768e0fcc6f3a1fa47'>Example testing</span>
+## <span id='0220f4950275efe768e0fcc6f3a1fa47'>Example testing</span>
 
 ```ruby
     # generate a vector of 1600 random bits
@@ -545,7 +545,7 @@ You can find the full program [here](/files/inverting_keccak_f/invert_keccak_f.r
 
 The inverse of the \\(1600\times 1600\\) matrix can be found [here](/files/inverting_keccak_f/64_inverted.mat). (It'll take a few minutes to compute it on the first run)
 
-### <span id='a57ed906d9b447025b6375a22fdc285b'>Implications</span>
+# <span id='a57ed906d9b447025b6375a22fdc285b'>Implications</span>
 
 The permutation function is known to be invertible, it's a permutation function after all, this doesn't make the whole hash function vulnerable. However, this property can lead to unwanted consequences, depending on the attack model we consider.
 
