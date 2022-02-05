@@ -139,13 +139,13 @@ The next subsections will summarize each of these operations.
 
 The \\(\theta\\) operation adds some adjacent columns to each element in the state array. The formal steps are:
 
-- For all pairs \\((x, z)\\) such that \\(0 ≤ x < 5\\) and \\(0 ≤ z < w\\), let
+- For all pairs \\((x, z)\\) such that \\(0 \leq x < 5\\) and \\(0 \leq z < w\\), let
   $$C[x, z] = A[x, 0, z] \oplus A[x, 1, z] \oplus A[x, 2, z] \oplus A[x, 3, z] \oplus A[x, 4, z]$$
   \\(C[x, z]\\) is just the sum in \\(GF(2)\\) of the column at \\((x, z)\\) (see the screenshot below for an illustration)
 - For all pairs \\((x, z)\\) such that \\(0 ≤ x < 5\\) and \\(0 ≤ z < w\\) let
   $$D[x, z] = C[(x-1)\bmod 5, z] \oplus C[(x+1)\bmod 5, (z-1)\bmod w]$$
   \\(D[x, z]\\) is the sum of the two columns, at \\(((x-1)\bmod 5, z)\\) and \\((x+1)\bmod 5, (z-1)\bmod w\\).
-- For all triples \\((x, y, z)\\) such that \\(0 ≤ x < 5, 0 ≤ y < 5\\), and \\(0 ≤ z < w\\), let
+- For all triples \\((x, y, z)\\) such that \\(0 \leq x < 5\\), \\(0 \leq y < 5\\), and \\(0 \leq z < w\\), let
   $$A'[x, y, z] = A[x, y, z] \oplus D[x, z]$$
 
 Code:
@@ -177,10 +177,10 @@ Code:
 
 The \\(\rho\\) operation rotates the bits of each lane by an offset. The steps are:
 
-- For all \\(z\\) such that \\(0 ≤ z < w\\), let \\(A'[0, 0, z] = A[0, 0, z]\\).
+- For all \\(z\\) such that \\(0 \leq z < w\\), let \\(A'[0, 0, z] = A[0, 0, z]\\).
 - Let \\((x, y) = (1, 0)\\).
 - For \\(t\\) from `0` to `23`:
-  - for all \\(z\\) such that \\(0 ≤ z < w\\), let \\(A'[x, y, z] = A[x, y, (z – (t +1)(t + 2)/2)\bmod w]\\)
+  - for all \\(z\\) such that \\(0 \leq z < w\\), let \\(A'[x, y, z] = A[x, y, (z – (t +1)(t + 2)/2)\bmod w]\\)
   - let \\((x, y) = (y, (2x + 3y)\bmod 5)\\).
 - \\(A'\\) becomes the new state.
 
@@ -206,7 +206,7 @@ Code:
 
 The \\(\pi\\) operation rearranges the positions of the lanes, also a simple substitution of the bits in the lanes.
 
-- For all triples \\((x, y, z)\\) such that \\(0 ≤ x < 5, 0 ≤ y < 5\\), and \\(0 ≤ z < w\\), let
+- For all triples \\((x, y, z)\\) such that \\(0 \leq x < 5\\), \\(0 \leq y < 5\\), and \\(0 \leq z < w\\), let
   \\(A'[x, y, z]= A[(x + 3y)\bmod 5, x, z]\\).
 - \\(A'\\) becomes the new state.
 
@@ -231,7 +231,7 @@ Code:
 
 The \\(\chi\\) operation replaces each bit in the state, with its xor with a non-linear function of two bits from its row.
 
-- For all triples \\((x, y, z)\\) such that \\(0 ≤ x < 5, 0 ≤ y < 5\\), and \\(0 ≤ z < w\\), let
+- For all triples \\((x, y, z)\\) such that \\(0 \leq x < 5\\), \\(0 \leq y < 5\\), and \\(0 \leq z < w\\), let
   $$A'[x, y, z] = A[x, y, z] \oplus ((A[(x+1)\bmod 5, y, z] \oplus 1) \wedge A[(x+2)\bmod 5, y, z])$$
 - \\(A'\\) becomes the new state.
 
@@ -257,7 +257,7 @@ The effect of this operation is to modify some bits of the lane \\((0, 0)\\) in 
 - Some round constants are calculated, using a simple algorithm that only takes into consideration the round index.
   \\(RC\\) is a vector of \\(w\\) bits. The constant for round \\(i_r\\).
 - Make \\(A'\\) a copy of \\(A\\).
-- For all z such that \\(0 ≤ z <w\\), let \\(A'[0, 0, z] = A[0, 0, z] ⊕ RC[z]\\).
+- For all z such that \\(0 \leq z <w\\), let \\(A'[0, 0, z] = A[0, 0, z] ⊕ RC[z]\\).
 - \\(A'\\) is the new state.
 
 More details on each of the steps, including the algorithm for calculating round constants, can be found on [the original NIST publication](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.202.pdf).
@@ -415,24 +415,24 @@ The \\(\rho\\) step essentially loops `24` times, and moves bits within each lan
 To inverse this step, we simply have to rotate the bits back, we can keep the same iteration order (same order of the lanes to rotate).
 
 - For \\(t\\) from `0` to `23`
-  - for all \\(z\\) such that \\(0 ≤ z <w\\), let
+  - for all \\(z\\) such that \\(0 \leq z <w\\), let
   $$ A[x, y, (z – (t +1)(t + 2)/2)\bmod w] = A'[x, y, z]$$
   - let \\((x, y) = (y, (2x + 3y)\bmod 5)\\)
 
 #### <span id='8f9a26e303dd7828e03db2fab96a133c'>\\( \pi^{-1} \\): Inverse transposition</span>
 
-Also a very simple step to inverse. \\(\pi\\) essentially performs \\(A'[x,y,z] = A[(x+3y)\bmod 5,x,z]\\) for every \\(0 <= x < 5, 0 <= y < 5, 0 <= z < w\\).
+Also a very simple step to inverse. \\(\pi\\) essentially performs \\(A'[x, y, z] = A[(x+3y)\bmod 5, x, z]\\) for every \\(0 \leq x < 5\\), \\(0 \leq y < 5\\), \\(0 \leq z < w\\).
 
 This is the algorithm for \\(\pi^{-1}\\):
 
-- For all \\(0 <= x < 5, 0 <= y < 5, 0 <= z < w\\):
-  - Set \\(A[(x+3y)\bmod 5,x,z] = A'[(x+3y)\bmod 5,x,z]\\)
+- For all \\(0 \leq x < 5\\), \\(0 \leq y < 5\\), \\(0 \leq z < w\\):
+  - Set \\(A[(x+3y)\bmod 5, x, z] = A'[x, y, z]\\)
 
 #### <span id='364549d11c2ca4a7d57526a128c79fc7'>\\( \chi^{-1} \\): Non-linearity</span>
 
 The \\(\chi\\) operation is the only non-linear one (non-linear because it includes logical and (&) operations, which are analog to multiplications).
 
-If we look closely, we notice that the step applies the non-linear function on 5-bit parts, that is, for every \\((y, z), 0 <= y < 5, 0 <= z < w\\), the bits at \\((x, y, z)\\) for every possible value of \\(x\\) (from `0` to `4`) are inputs and outputs of the function.
+If we look closely, we notice that the step applies the non-linear function on 5-bit parts, that is, for every \\((y, z)\\), \\(0 \leq y < 5\\), \\(0 \leq z < w\\), the bits at \\((x, y, z)\\) for every possible value of \\(x\\) (from `0` to `4`) are inputs and outputs of the function.
 
 To inverse it, my approach was to:
 
