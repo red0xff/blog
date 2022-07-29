@@ -2,10 +2,10 @@
 title: "Cracking the Coding Interview (literally)"
 date: 2022-07-29T18:32:00+02:00
 author: "NIBOUCHA Redouane"
-description: "A trick for getting an extended time limit on competitive-programming environments"
+description: "A trick for getting an extended time (and memory) limit on competitive-programming environments"
 cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1659112199/cracking_the_coding_interview_literally/hrtfrb5ctykeifit3xyw.jpg"
-tags: ["programming","shorts"]
-categories: ["security"]
+tags: ["programming","tricks","low level","competitive programming"]
+categories: ["programming","security"]
 ---
 # Table of Contents
 1. [Introduction](#0b79795d3efc95b9976c7c5b933afce2)
