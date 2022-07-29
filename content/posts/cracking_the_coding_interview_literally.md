@@ -7,27 +7,55 @@ cover: "https://res.cloudinary.com/dik00g2mh/image/upload/v1659112199/cracking_t
 tags: ["programming","shorts"]
 categories: ["security"]
 ---
+# Table of Contents
+1. [Introduction](#0b79795d3efc95b9976c7c5b933afce2)
+	1. [About competitive programming](#6477f0987fb5a53e6369d1917e269d7f)
+	2. [Why is it important?](#8fcb81cfdd7b25a2e8fe175f3c88cfec)
+	3. [Types of failed submissions](#c49d19689605f60652d71577f5e93b59)
+	4. [Let's focus on time limits, what?](#877ffcb70d0e01f13693cf0d93797a15)
+		1. [Hackerrank](#6642e4bb428f8cadd1b0873fc4013baf)
+		2. [CodinGame for Work](#667319ac566eaac797fdca146988803d)
+		3. [Codechef](#5dc25e8e747697d445a5d2110618850f)
+2. [My Idea](#f9e976a90ad6e9dbab943c1e08234c3d)
+	1. [Choice for the slower programming language (for the stub)](#551e06d6aba9bf326dd4db6f034fb0ff)
+	2. [Initial enumeration on the different platforms](#c331a5c9792d72a6b203c4ce3670fa9b)
+		1. [Hackerrank](#6642e4bb428f8cadd1b0873fc4013baf)
+		2. [Codingame](#b63e2d7786dac4c313fa11a061fa29c6)
+		3. [Codechef](#5dc25e8e747697d445a5d2110618850f)
+	3. [Writing the stub](#746756a27857e5ce81151d21b3c84292)
+	4. [Implementing the stub](#52310a1a8adabc58b0df39e7774dbbc1)
+		1. [Decompressing the native executable](#0d6f0596a96b53b273088a5bc9335903)
+		2. [Getting pointers to `memfd_create`, `write` and `fexecve`](#9e9c3afd84a2af46ae2565cb302fc78e)
+		3. [Creating the anonymous file, and writing the binary to it](#c4bceb8d0b2fed6978281df08032e4fd)
+		4. [Preparing a fake `ARGV` and `ENVP` for `fexecve`](#b8f5f3f6245c02368be4b47dedeb0f12)
+		5. [Calling the loaded executable](#3fd8fc54792153098b4b7c558025442b)
+	5. [Testing with a C program that prints "hello world"](#c6dff7ea9b9f521dbeb6cbdc0c9a4507)
+		1. [Hackerrank](#6642e4bb428f8cadd1b0873fc4013baf)
+		2. [Codingame](#b63e2d7786dac4c313fa11a061fa29c6)
+		3. [Codechef](#5dc25e8e747697d445a5d2110618850f)
+	6. [Impact, and possible mitigations](#f8479c834875bd02e4e5b5da124ff5de)
+3. [Conclusion](#6f8b794f3246b0c1e1780bb4d4d5dc53)
 
 <script type="text/javascript"
     src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-# Introduction
+# <span id='0b79795d3efc95b9976c7c5b933afce2'>Introduction</span>
 
 Competitive programming was my entry point into computer science. I joined [Hackerrank](https://www.hackerrank.com/), [Codechef](https://www.codechef.com/), [Project Euler](https://projecteuler.net/) and more similar platforms around 2014, to practice and improve my skills, because I was having fun solving algorithmic problems, and because I was interested in mastering at least a few programming languages (for general scripting and low-level programming mainly).
 
-# About competitive programming
+## <span id='6477f0987fb5a53e6369d1917e269d7f'>About competitive programming</span>
 
 For those who are not familiar with this mind-sport, it's about solving computer science problems with given constraints, for example, calculating the n-th Fibonacci number that is also prime, finding the shortest path in a graph, or finding all the ways to write a number as the sum of at least three positive numbers. Each problem has some constraints (Sizes of the inputs it gets). 
 The user also gets some example inputs and outputs, and should write and submit a computer program that can read inputs in the given format, solve the problem and print the corresponding outputs.
-The user's submission gets executed in the cloud, and its output gets compared with the output of "hidden" testcases. If it's the same, the submission is considered as correct.
+The user's submission gets executed in the cloud, and its output gets compared with the precomputed correct output of "hidden" testcases. If it's the same, the submission is considered as correct.
 
-## Why is it important?
+## <span id='8fcb81cfdd7b25a2e8fe175f3c88cfec'>Why is it important?</span>
 
 - Competitive programming is used as a basis for hiring by numerous companies: The first step of the hiring process is often a programming challenge to solve on a platform like [Hackerrank](https://www.hackerrank.com/) or [Codingame](https://www.codingame.com/).
 - Contests: There are a lot of them ([ACM ICPC](https://icpc.global/), [Google CodeJam](https://codingcompetitions.withgoogle.com/codejam), [Meta HackerCup](https://www.facebook.com/codingcompetitions/hacker-cup) ...), just like CTFs.
 
-## Types of failed submissions
+## <span id='c49d19689605f60652d71577f5e93b59'>Types of failed submissions</span>
 
 There are different kinds of failed submissions:
 
@@ -36,28 +64,28 @@ There are different kinds of failed submissions:
 - `Compilation Error`: When the program doesn't compile, or contains syntax errors.
 - `Runtime Error`: When the program crashes (unhandled exception, segmentation fault, or any other type of errors).
 
-## Let's focus on time limits, what?
+## <span id='877ffcb70d0e01f13693cf0d93797a15'>Let's focus on time limits, what?</span>
 
 The `TLE`, or Time-Limit Exceeded error happens when a submission takes more than the maximum duration allocated for it. People running these platforms have figured out that comparing the execution time of programs written in different programming languages is unfair (and would give a clear advantage to C/C++ programmers for instance). For this reason, they defined a multiplier that is specific to each programming language. On Hackerrank for example, Ruby or Python submissions get an execution time that is 5 times higher than C or C++ submissions (this aims to compensate the runtime overhead).
 
 Below are some numbers taken from the different (and most popular) competitive programming platforms at the time of writing (For platforms that can host "work" interviews, these are the configurations of the environment where candidate submissions will be executed).
 
-#### Hackerrank
+### <span id='6642e4bb428f8cadd1b0873fc4013baf'>Hackerrank</span>
 
 | Programming language | Description             | Time (secs) | Memory (MB) |
 | -------------------- | ----------------------- | ----------- | ----------- |
 | C                    | GCC 8.3.0, C11 standard | 2           | 512         |
 | C#                   | .NET 6.0.2, C# 10.0     | 3           | 512         |
 | C++                  | G++ 8.3.0               | 2           | 512         |
-| Coffeescript         | Node.js v14.15.4        | 10          | 1024        |
-| Common Lisp          | SBCL 1.4.2              | 12          | 512         |
+| Coffeescript         | Node.js v14.15.4        | 10          | 1024        |
+| Common Lisp          | SBCL 1.4.2              | 12          | 512         |
 | Erlang               | Erlang/OTP 21           | 12          | 1024        |
 | Go                   | 1.13                    | 4           | 1024        |
 | Haskell              | ghc 8.6.5, lts-14.7     | 5           | 512         |
 | Java 15              | OpenJDK 15.0.2          | 4           | 512         |
 | Lua                  | 5.3.3                   | 12          | 512         |
-| OCaml                | ocamlopt, version 4.09  | 3           | 512         |
-| Perl                 | Perl (v5.26.3)          | 9           | 512         |
+| OCaml                | ocamlopt 4.09           | 3           | 512         |
+| Perl                 | Perl (v5.26.3)          | 9           | 512         |
 | PHP                  | PHP 7.3.13              | 9           | 512         |
 | PyPy 3               | PyPy3.6 v6.0.0          | 4           | 512         |
 | Python 3             | Python 3.9.4            | 10          | 1024        |
@@ -65,7 +93,7 @@ Below are some numbers taken from the different (and most popular) competitive p
 
 The full table can be found [here](https://support.hackerrank.com/hc/en-us/articles/1500002392722--Execution-Environment-and-Samples).
 
-#### CodinGame for Work
+### <span id='667319ac566eaac797fdca146988803d'>CodinGame for Work</span>
 
 | Programming language | Description             | Time (secs) | Memory (MB) |
 | -------------------- | ----------------------- | ----------- | ----------- |
@@ -77,14 +105,14 @@ The full table can be found [here](https://support.hackerrank.com/hc/en-us/artic
 | Java                 | JDK 1.8.0 OpenJDK 11.0.2| 2           | 768         |
 | Lua                  | 5.4.3                   | 6           | 768         | 
 | OCaml                | 4.12.0                  | 6           | 768         |
-| Perl                 | 5.32.1                  | 6           | 768         |
+| Perl                 | 5.32.1                  | 6           | 768         |
 | PHP                  | PHP 7.3.9               | 2           | 768         |
 | Python 3             | Python 3.9.2            | 5           | 768         |
 | Ruby                 | Ruby 3.0.1              | 6           | 768         |
 
 The full table can be found [here](https://help.codingame.com/article/273-what-environment-does-my-test-run-in).
 
-#### Codechef
+### <span id='5dc25e8e747697d445a5d2110618850f'>Codechef</span>
 
 | Programming language   | Time Multiplier  |
 | ---------------------- | ---------------- |
@@ -95,12 +123,12 @@ The full table can be found [here](https://help.codingame.com/article/273-what-e
 
 The updated table can be found [here](https://blog.codechef.com/2009/04/01/announcing-time-limits-based-on-programming-language/).
 
-# My Idea
+# <span id='f9e976a90ad6e9dbab943c1e08234c3d'>My Idea</span>
 
 Looking back into this common practice of having different time limits for different programming languages, I got an idea: what if I could somehow execute faster code from a slower programming language, and get an extended time limit?
 While the constraints are often picked in a way that makes naive or unoptimized solutions time out, this could for example allow candidates to submit a sub-optimal solution in `C`, `C++` or `Go` (embedded in a stub written in a slower programming language), and avoid the time-limit exceeded error (because the platform would pick the time limit of the slower programming language).
 
-## Choice for the slower programming language (for the stub)
+## <span id='551e06d6aba9bf326dd4db6f034fb0ff'>Choice for the slower programming language (for the stub)</span>
 
 We can choose any programming language that is considered as slow compared to `C`, and that has a builtin library that allows low-level memory hacking (calling native functions, manipulating pointers for example).
 
@@ -110,7 +138,7 @@ Possible choices are:
 - Ruby with [fiddle](https://ruby-doc.org/stdlib/libdoc/fiddle/rdoc/Fiddle.html).
 - Probably more.
 
-### Initial enumeration on the different platforms
+## <span id='c331a5c9792d72a6b203c4ce3670fa9b'>Initial enumeration on the different platforms</span>
 
 Let's first check the operating systems, kernel and libc versions on the different platforms.
 
@@ -122,19 +150,19 @@ local commands = { 'uname -a', 'id', 'ls -l /lib/x86_64-linux-gnu/libc.so.6' };
 os.execute( table.concat(commands, ' ; ') );
 ```
 
-#### Hackerrank
+### <span id='6642e4bb428f8cadd1b0873fc4013baf'>Hackerrank</span>
 
 ![hackerrank_enum](https://res.cloudinary.com/dik00g2mh/image/upload/v1659101412/cracking_the_coding_interview_literally/zy0if5wqenvqckrzkwby.png)
 
-#### Codingame
+### <span id='b63e2d7786dac4c313fa11a061fa29c6'>Codingame</span>
 
 ![codingame](https://res.cloudinary.com/dik00g2mh/image/upload/v1659101639/cracking_the_coding_interview_literally/ruui5x36ymj8ycdf5gda.png)
 
-#### Codechef
+### <span id='5dc25e8e747697d445a5d2110618850f'>Codechef</span>
 
 ![codechef](https://res.cloudinary.com/dik00g2mh/image/upload/v1659101412/cracking_the_coding_interview_literally/akaon3ankqmtwscku8sx.png)
 
-## Writing the stub
+## <span id='746756a27857e5ce81151d21b3c84292'>Writing the stub</span>
 
 For a proof of concept, we will be doing the following:
 
@@ -144,9 +172,9 @@ For a proof of concept, we will be doing the following:
 
 We will avoid writing data on the disk, as different environments can have different configurations, and some might not allow writing data on the disk.
 
-### Implementing the stub
+## <span id='52310a1a8adabc58b0df39e7774dbbc1'>Implementing the stub</span>
 
-#### Decompressing the native executable
+### <span id='0d6f0596a96b53b273088a5bc9335903'>Decompressing the native executable</span>
 
 ```ruby
 require 'fiddle'
@@ -166,7 +194,7 @@ DEFLATED
 exe = Zlib.inflate(Base64.decode64(exe))
 ```
 
-#### Getting pointers to `memfd_create`, `write` and `fexecve`
+### <span id='9e9c3afd84a2af46ae2565cb302fc78e'>Getting pointers to `memfd_create`, `write` and `fexecve`</span>
 
 ```ruby
 libc = Fiddle.dlopen('/lib/x86_64-linux-gnu/libc.so.6');
@@ -193,7 +221,7 @@ fexecve = Fiddle::Function.new(
 );
 ```
 
-#### Creating the anonymous file, and writing the binary to it
+### <span id='c4bceb8d0b2fed6978281df08032e4fd'>Creating the anonymous file, and writing the binary to it</span>
 
 ```ruby
 fd = memfd_create.call('exec', 0)
@@ -201,7 +229,7 @@ fd = memfd_create.call('exec', 0)
 written = write.call(fd, exe, exe.length)
 ```
 
-#### Preparing a fake `ARGV` and `ENVP` for `fexecve`
+### <span id='b8f5f3f6245c02368be4b47dedeb0f12'>Preparing a fake `ARGV` and `ENVP` for `fexecve`</span>
 
 ```ruby
 # set argv[0] = "exec"
@@ -219,13 +247,13 @@ envp = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
 envp[0, 8] = 0.chr * 8
 ```
 
-#### Call the loaded executable
+### <span id='3fd8fc54792153098b4b7c558025442b'>Calling the loaded executable</span>
 
 ```ruby
 ret = fexecve.call(fd, argv, envp)
 ```
 
-### Testing with a C program that prints "hello world"
+## <span id='c6dff7ea9b9f521dbeb6cbdc0c9a4507'>Testing with a C program that prints "hello world"</span>
 
 The program below runs the following C code:
 
@@ -354,15 +382,15 @@ envp[0, 8] = 0.chr * 8
 ret = fexecve.call(fd, argv, envp)
 ```
 
-#### Hackerrank
+### <span id='6642e4bb428f8cadd1b0873fc4013baf'>Hackerrank</span>
 
 ![hackerrank_result](https://res.cloudinary.com/dik00g2mh/image/upload/v1659101413/cracking_the_coding_interview_literally/zakum1pvetkmrgwwwnkv.png)
 
-#### Codingame
+### <span id='b63e2d7786dac4c313fa11a061fa29c6'>Codingame</span>
 
 ![codingame_result](https://res.cloudinary.com/dik00g2mh/image/upload/v1659101413/cracking_the_coding_interview_literally/creljybozifmj2jnkgp5.png)
 
-#### Codechef
+### <span id='5dc25e8e747697d445a5d2110618850f'>Codechef</span>
 
 ![codechef_result](https://res.cloudinary.com/dik00g2mh/image/upload/v1659101412/cracking_the_coding_interview_literally/mc61efflhpihew4tjkbk.png)
 
@@ -379,7 +407,7 @@ mmap = Fiddle::Function.new(
 )
 
 # 7 = PROT_READ | PROT_WRITE | PROT_EXEC
-# 0x22 = MAP_ANONYMOUS | MAP_PRIVATE
+# 0x22 = MAP_ANONYMOUS | MAP_PRIVATE
 mem = mmap.call(0, 0x1000, 7, 0x22, -1, 0);
 
 # write the shellcode:
@@ -399,7 +427,7 @@ memfd_create = Fiddle::Function.new(
 ![codechef_result2](https://res.cloudinary.com/dik00g2mh/image/upload/v1659101412/cracking_the_coding_interview_literally/dhto4vgms4ykyipjjy9v.png)
 
 
-# Impact, and possible mitigations
+## <span id='f8479c834875bd02e4e5b5da124ff5de'>Impact, and possible mitigations</span>
 
 The impact of this isn't huge, because:
 
@@ -413,7 +441,7 @@ Below are some possible mitigations that would solve this issue:
 - A seccomp whitelist (why would a candidate call `memfd_create`, or `execve` ?!).
 - Modified programming language runtimes to prevent unsafe operations (no `ctypes` module for python for example).
 
-# Conclusion
+# <span id='6f8b794f3246b0c1e1780bb4d4d5dc53'>Conclusion</span>
 
 This post did not demonstrate a vulnerability, but rather a logic flaw in the execution environments of the most popular competitive programming platforms. This post is intended for educational purpose only. You should not use the approach described in this article at your advantage, and I am not responsible of any misuse or damage related to that.
 
