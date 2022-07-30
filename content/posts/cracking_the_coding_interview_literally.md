@@ -259,7 +259,7 @@ envp[0, 8] = 0.chr * 8
 
 ### <span id='3fd8fc54792153098b4b7c558025442b'>Calling the loaded executable</span>
 
-`fexecve` Executes a program from a file descriptor. It works like the `execve` syscall, but instead of taking a file path, it takes the file descriptor of an open file.
+`fexecve` Executes a program from a file descriptor. It works like the `execve` syscall, but instead of taking a file path, it takes the file descriptor of an open file.
 
 ![fexecve_man](https://res.cloudinary.com/dik00g2mh/image/upload/v1659219066/cracking_the_coding_interview_literally/gstcmnkw6vbvgmlhgmhs.png)
 
