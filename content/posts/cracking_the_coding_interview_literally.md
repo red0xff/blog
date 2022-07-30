@@ -170,6 +170,8 @@ For a proof of concept, we will be doing the following:
 - Decompress and decode the payload (`zlib` and `base64`), and write it to the anonymous file (using `write`).
 - Execute the anonymous file from memory using `fexecve`.
 
+More details about these functions will be given below.
+
 We will avoid writing data on the disk, as different environments can have different configurations, and some might not allow writing data on the disk.
 
 ## <span id='52310a1a8adabc58b0df39e7774dbbc1'>Implementing the stub</span>
@@ -223,11 +225,19 @@ fexecve = Fiddle::Function.new(
 
 ### <span id='c4bceb8d0b2fed6978281df08032e4fd'>Creating the anonymous file, and writing the binary to it</span>
 
+From the manual page of `memfd_create` (It's a system call in Linux).
+
+![memfd_create_man](https://res.cloudinary.com/dik00g2mh/image/upload/v1659218805/cracking_the_coding_interview_literally/hcafdgp5mft8s9jsy5yg.png)
+
+It's exactly the function we need to create a pseudo-file that doesn't get written to the disk.
+
 ```ruby
 fd = memfd_create.call('exec', 0)
 
 written = write.call(fd, exe, exe.length)
 ```
+
+`write` is the syscall that writes data to a file.
 
 ### <span id='b8f5f3f6245c02368be4b47dedeb0f12'>Preparing a fake `ARGV` and `ENVP` for `fexecve`</span>
 
@@ -248,6 +258,10 @@ envp[0, 8] = 0.chr * 8
 ```
 
 ### <span id='3fd8fc54792153098b4b7c558025442b'>Calling the loaded executable</span>
+
+`fexecve` Executes a program from a file descriptor. It works like the `execve` syscall, but instead of taking a file path, it takes the file descriptor of an open file.
+
+![fexecve_man](https://res.cloudinary.com/dik00g2mh/image/upload/v1659219066/cracking_the_coding_interview_literally/gstcmnkw6vbvgmlhgmhs.png)
 
 ```ruby
 ret = fexecve.call(fd, argv, envp)
